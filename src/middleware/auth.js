@@ -1,6 +1,6 @@
+require("dotenv").config();
 const jwt = require("jsonwebtoken");
-
-const secretkey = "mynameisshivamtiwarifullstackdeveloper";
+const secretkey = process.env.SECRET_KEY;
 
 const generateToken = async ({ email }) => {
   const token = await jwt.sign({ email }, secretkey);
@@ -9,15 +9,19 @@ const generateToken = async ({ email }) => {
 
 const verifyToken = async (req, res, next) => {
   try {
-    
     const auth = await req.headers.authorization.split(" ")[1];
 
     if (!auth) {
       return Promise.reject(new Error("Please provide a Authentication Token"));
     }
-    const [error, result] = jwt.verify(auth, secretkey, next, function (err, decoded) {
-      return [err, decoded];
-    });
+    const [error, result] = jwt.verify(
+      auth,
+      secretkey,
+      next,
+      function (err, decoded) {
+        return [err, decoded];
+      }
+    );
     if (error) {
       return Promise.reject(error);
     }
